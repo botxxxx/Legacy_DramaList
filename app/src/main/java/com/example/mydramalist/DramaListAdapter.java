@@ -51,8 +51,15 @@ public class DramaListAdapter extends BaseAdapter {
     @SuppressLint({"ClickableViewAccessibility", "InflateParams", "SimpleDateFormat", "WrongViewCast"})
     public View getView(int i, View view, ViewGroup viewGroup) {
         ViewHolder holder;
-        DramaData drama = dramaData.get(i);
         context = viewGroup.getContext();
+        DramaData drama = dramaData.get(i);
+        String name = drama.name;
+        String total_views = drama.total_views + " 次";
+        String created_at = new SimpleDateFormat("yyyy-MM-dd")
+                .format(Date.from(Instant.parse(drama.created_at)));
+        String thumb = drama.thumb;
+        String rating = new java.text.DecimalFormat("#.0").
+                format(Double.parseDouble(drama.rating));
         if (view == null) {
             view = LayoutInflater.from(context).inflate(R.layout.layout_items, null);
             holder = new ViewHolder();
@@ -66,17 +73,10 @@ public class DramaListAdapter extends BaseAdapter {
             holder = (ViewHolder) view.getTag();
         }
         try {
-            String name = drama.name;
-            String total_views = drama.total_views + " 次";
-            String created_at = new SimpleDateFormat("yyyy-MM-dd")
-                    .format(Date.from(Instant.parse(drama.created_at)));
-            String thumb = drama.thumb;
-            String rating = new java.text.DecimalFormat("#.0").
-                    format(Double.parseDouble(drama.rating));
             Picasso.with(context)
                     .load(thumb)
                     .error(R.drawable.ic_offline)
-                    .into((ImageView) view.findViewById(R.id.item_img));
+                    .into(holder.item_img);
             holder.item_name.setText(name);
             holder.item_rating_txt.setText(rating);
             holder.item_rating_bar.setRating(Float.parseFloat(rating));
@@ -86,8 +86,11 @@ public class DramaListAdapter extends BaseAdapter {
                 detail = LayoutInflater.from(context).inflate(R.layout.layout_detail, null);
                 dialog = new AlertDialog.Builder(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
                         .setView(detail).setCancelable(true).create();
-                BitmapDrawable drawable = (BitmapDrawable) ((ImageView) finalView.findViewById(R.id.item_img)).getDrawable();
-                ((ImageView) detail.findViewById(R.id.item_img)).setImageBitmap(drawable.getBitmap());
+                try {
+                    BitmapDrawable drawable = (BitmapDrawable) ((ImageView) finalView.findViewById(R.id.item_img)).getDrawable();
+                    ((ImageView) detail.findViewById(R.id.item_img)).setImageBitmap(drawable.getBitmap());
+                } catch (Exception ignored) {
+                }
                 ((TextView) detail.findViewById(R.id.item_name)).setText(name);
                 ((TextView) detail.findViewById(R.id.item_rating_txt)).setText(rating);
                 ((RatingBar) detail.findViewById(R.id.item_rating_bar)).setRating(Float.parseFloat(rating));

@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_marginRight="6dp"
-            android:text="No internet"
+            android:text="Refresh here"
             android:textColor="@android:color/white"
             android:textSize="17sp" />
 

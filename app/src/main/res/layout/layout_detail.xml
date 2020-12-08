@@ -5,14 +5,14 @@
     android:layout_height="wrap_content"
     android:background="@color/black"
     tools:ignore="ContentDescription,HardcodedText,
-    Autofill,LabelFor,RtlHardcoded,TextFields">
+    Autofill,LabelFor,RtlHardcoded,TextFields,UselessLeaf">
 
     <ImageView
         android:id="@+id/item_img"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@drawable/a_sisters"
+        android:src="@drawable/ic_offline"
         tools:ignore="ContentDescription" />
 
     <LinearLayout
@@ -60,7 +60,7 @@
                         android:id="@+id/item_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="致我們單純的小美好"
+                        android:text="item_name"
                         android:textColor="@color/gray_light"
                         android:textSize="40sp" />
 
@@ -83,7 +83,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="5dp"
                             android:singleLine="true"
-                            android:text="4.3"
+                            android:text="0"
                             android:textColor="@color/gray_light"
                             android:textSize="21sp" />
 
@@ -95,7 +95,7 @@
                             android:layout_marginRight="5dp"
                             android:isIndicator="true"
                             android:numStars="5"
-                            android:rating="3.5"
+                            android:rating="0"
                             android:stepSize="0.5"
                             android:theme="@style/RatingBar" />
                     </TableRow>
@@ -118,7 +118,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:singleLine="true"
-                            android:text="14611380 次"
+                            android:text="0 次"
                             android:textColor="@color/gray_light"
                             android:textSize="20sp" />
                     </TableRow>

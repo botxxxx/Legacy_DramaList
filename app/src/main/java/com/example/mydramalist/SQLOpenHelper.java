@@ -19,6 +19,7 @@ public class SQLOpenHelper extends SQLiteOpenHelper {
     public static final String CREATED_AT = "created_at";
     public static final String THUMB = "thumb";
     public static final String RATING = "rating";
+    public static final String IMAGE = "image";
 
     private static final String CREATE_TABLE =
             "CREATE TABLE " + TABLE + " (" +
@@ -27,7 +28,8 @@ public class SQLOpenHelper extends SQLiteOpenHelper {
                     TOTAL_VIEWS + " INTEGER," +
                     CREATED_AT + " DATE," +
                     THUMB + " TEXT," +
-                    RATING + " REAL)";
+                    RATING + " REAL," +
+                    IMAGE + " BLOB)";
 
     private static final String DELETE_TABLE =
             "DROP TABLE IF EXISTS " + TABLE;
@@ -38,15 +40,10 @@ public class SQLOpenHelper extends SQLiteOpenHelper {
     }
 
     public void onCreate(SQLiteDatabase db) {
-        // テーブル作成
         db.execSQL(CREATE_TABLE);
-        Log.d("debug", "onCreate(SQLiteDatabase db)");
-
     }
 
-    @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // アップデートの判別
         db.execSQL(DELETE_TABLE);
         onCreate(db);
     }
@@ -54,5 +51,4 @@ public class SQLOpenHelper extends SQLiteOpenHelper {
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);
     }
-
 }

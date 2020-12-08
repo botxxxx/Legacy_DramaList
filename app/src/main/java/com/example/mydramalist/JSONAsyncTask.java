@@ -32,10 +32,11 @@ public class JSONAsyncTask extends AsyncTask<String, Void, JSONObject[]> {
                 dramaData.clear();
                 JSONArray items = json[0].getJSONArray("data");
                 for (int i = 0; i < items.length(); i++) {
-                    dramaData.add(new DramaData(items.getJSONObject(i)));
+                    DramaData drama = new DramaData(items.getJSONObject(i));
+                    dramaData.add(drama);
                     Log.e(MainActivity.TAG, "JSONArray:" + items.getJSONObject(i).getString("name"));
                 }
-                updateUI(context);
+                updateUI(context, true);
             }
         } catch (Exception ignored) {
         }

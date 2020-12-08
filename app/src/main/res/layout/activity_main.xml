@@ -24,10 +24,10 @@
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginLeft="5dp"
+            android:layout_marginRight="47dp"
             android:hint="搜尋"
             android:paddingLeft="10dp"
             android:singleLine="true"
-            android:layout_marginRight="47dp"
             android:textColor="@android:color/black"
             android:textSize="16sp" />
 
@@ -37,20 +37,32 @@
             android:layout_height="40dp"
             android:layout_alignParentEnd="true"
             android:layout_marginRight="5dp"
-            android:src="@drawable/ic_cancel"
-            android:textColor="@android:color/white"
-            android:textSize="16sp" />
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_cancel" />
     </RelativeLayout>
 
-    <ListView
-        android:id="@+id/drama_list"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="5dp"
-        android:layout_marginRight="5dp"
-        android:divider="@color/gone"
-        android:dividerHeight="0dp"
-        android:gravity="center"
-        tools:listitem="@layout/layout_items" />
+        android:layout_marginRight="5dp">
+
+        <ImageView
+            android:id="@+id/search_oops"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerCrop"
+            android:src="@drawable/bg_oops"/>
+
+        <ListView
+            android:id="@+id/drama_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@color/gone"
+            android:dividerHeight="0dp"
+            android:gravity="center"
+            tools:listitem="@layout/layout_items" />
+    </RelativeLayout>
 </LinearLayout>
