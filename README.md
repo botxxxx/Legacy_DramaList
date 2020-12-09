@@ -1,13 +1,9 @@
 # MyDramaList
 
-completed
+### completed
 -------------------------------
-Internet check
-Drama list
-Drama details
-Search temp
-History
+Internet check, Drama list, Drama details, Search temp, History
 
-not completed
+### not completed
 -------------------------------
 Bitmap save function
