@@ -8,22 +8,22 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
+import org.jetbrains.annotations.NotNull;
+
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -61,18 +61,19 @@ public class MainActivity extends Activity {
             showPermission();
         } else {
             init();
-            checkDB(null);
+            checkDB(null, true);
             if (checkInternet())
                 new JSONAsyncTask(this).execute(URI);
             else
                 findViewById(R.id.search_oops).setVisibility(View.VISIBLE);
-            checkDB2();
+            new Handler().postDelayed(this::checkDB2, 1000);
         }
     }
 
     /**
      * 初始化
      */
+    @SuppressLint("HandlerLeak")
     private void init() {
         dramaData = new ArrayList<>();
         listView = findViewById(R.id.drama_list);
@@ -84,7 +85,7 @@ public class MainActivity extends Activity {
                 new JSONAsyncTask(this).execute(URI);
                 editText.setText("");
                 dramaData.clear();
-                checkDB(null);
+                checkDB(null, false);
                 findViewById(R.id.search_btn).setVisibility(View.GONE);
             } else
                 findViewById(R.id.search_oops).setVisibility(View.VISIBLE);
@@ -101,7 +102,7 @@ public class MainActivity extends Activity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (editText.getText().toString().length() > 0) {
                     dramaData.clear();
-                    checkDB(editText.getText().toString());
+                    checkDB(editText.getText().toString(), false);
                     findViewById(R.id.search_btn).setVisibility(View.VISIBLE);
                 } else {
                     findViewById(R.id.search_btn).setVisibility(View.GONE);
@@ -112,7 +113,7 @@ public class MainActivity extends Activity {
         findViewById(R.id.search_btn).setOnClickListener((View v) -> {
             editText.setText("");
             dramaData.clear();
-            checkDB(null);
+            checkDB(null, false);
             findViewById(R.id.search_btn).setVisibility(View.GONE);
         });
     }
@@ -158,36 +159,9 @@ public class MainActivity extends Activity {
         return Internet;
     }
 
-    private void checkDB2() {
-        if (db_helper2 == null) {
-            db_helper2 = new SQLOpenHelper2(getApplicationContext());
-        }
-
-        if (db2 == null) {
-            db2 = db_helper2.getReadableDatabase();
-        }
-        try {
-            Cursor cursor = db2.query(TABLE2,
-                    new String[]{DATA2},
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
-            );
-            cursor.moveToFirst();
-            for (int i = 0;i<cursor.getCount();i++) {
-                Log.e(MainActivity.TAG, "cursor:" + cursor.getString(i));
-            }
-            cursor.close();
-        } catch (Exception e) {
-            Log.e(MainActivity.TAG, "cursor:" + e.toString());
-        }
-        updateUI(this, false);
-    }
-
-    private void checkDB(String select) {
-        insertTempData(this, select);
+    private void checkDB(String name, boolean init) {
+        if (!init)
+            insertTempData(this, name);
         if (db_helper == null) {
             db_helper = new SQLOpenHelper(getApplicationContext());
         }
@@ -195,15 +169,15 @@ public class MainActivity extends Activity {
             db = db_helper.getReadableDatabase();
         }
         findViewById(R.id.search_oops).setVisibility(View.GONE);
-        if (select != null) {
-            select = NAME + " like " + "'%" + select + "%' OR " +
-                    NAME + " like '" + select + "%' OR " +
-                    NAME + " like '%" + select + "' OR " +
-                    NAME + " like '" + select + "'";
+        if (name != null) {
+            name = NAME + " like " + "'%" + name + "%' OR " +
+                    NAME + " like '" + name + "%' OR " +
+                    NAME + " like '%" + name + "' OR " +
+                    NAME + " like '" + name + "'";
         }
         Cursor cursor = db.query(TABLE,
                 new String[]{ID, NAME, TOTAL_VIEWS, CREATED_AT, THUMB, RATING},
-                select,
+                name,
                 null,
                 null,
                 null,
@@ -232,7 +206,6 @@ public class MainActivity extends Activity {
         if (db == null) {
             db = db_helper.getReadableDatabase();
         }
-
         ContentValues values = new ContentValues();
         values.put(ID, dramaData.drama_id);
         values.put(NAME, dramaData.name);
@@ -246,7 +219,43 @@ public class MainActivity extends Activity {
         db.insert(TABLE, null, values);
     }
 
-    public static void insertTempData(Context context, String edit_text) {
+
+    private void checkDB2() {
+        if (db_helper2 == null) {
+            db_helper2 = new SQLOpenHelper2(getApplicationContext());
+        }
+
+        if (db2 == null) {
+            db2 = db_helper2.getReadableDatabase();
+        }
+        try {
+            Cursor cursor = db2.query(TABLE2,
+                    new String[]{DATA2},
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+            );
+            cursor.moveToFirst();
+            for (int i = 0; i < cursor.getCount(); i++) {
+                Log.e(MainActivity.TAG, "cursor:" + cursor.getString(i));
+                if (!cursor.getString(i).equals(" ")) {
+                    editText.setText(cursor.getString(i));
+                    dramaData.clear();
+                    checkDB(cursor.getString(i), true);
+                    findViewById(R.id.search_btn).setVisibility(View.VISIBLE);
+
+                }
+            }
+            cursor.close();
+        } catch (Exception e) {
+            Log.e(MainActivity.TAG, "cursor:" + e.toString());
+        }
+        updateUI(this, false);
+    }
+
+    private void insertTempData(Context context, String name) {
         if (db_helper2 == null) {
             db_helper2 = new SQLOpenHelper2(context);
         }
@@ -254,13 +263,13 @@ public class MainActivity extends Activity {
         if (db2 == null) {
             db2 = db_helper2.getReadableDatabase();
         }
-        db_helper2.onUpgrade(db2 ,db2.getVersion(), db2.getVersion() + 1);
+        db_helper2.onUpgrade(db2, db2.getVersion(), db2.getVersion() + 1);
         ContentValues values = new ContentValues();
-        if (edit_text != null)
-            values.put(DATA2, edit_text);
+        if (name == null)
+            values.put(DATA2, " ");
         else
-            values.put(DATA2, "");
-        Log.e(MainActivity.TAG, "insertTempData:" + edit_text);
+            values.put(DATA2, name);
+        Log.e(MainActivity.TAG, "insertTempData:" + name);
         db2.insert(TABLE2, null, values);
     }
 }
